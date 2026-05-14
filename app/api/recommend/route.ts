@@ -64,7 +64,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "No books provided." }, { status: 400 });
   }
 
-  const apiKey = "";
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey?.trim()) {
+    return NextResponse.json(
+      { error: "Server not configured. Add ANTHROPIC_API_KEY environment variable." },
+      { status: 500 }
+    );
+  }
 
   const client = new Anthropic({ apiKey });
 
