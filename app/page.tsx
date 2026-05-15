@@ -115,6 +115,15 @@ export default function Home() {
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-12 space-y-8">
+      {/* Home link */}
+      <div className="flex justify-end">
+        <a
+          href="https://www.maxcooperevans.com"
+          className="text-xs text-stone-400 hover:text-stone-200 transition-colors"
+        >
+          ← Home
+        </a>
+      </div>
       {/* Header */}
       <div className="text-center space-y-2">
         <h1 className="text-4xl font-bold tracking-tight text-stone-800">
