@@ -119,7 +119,7 @@ export default function Home() {
       <div className="flex justify-end">
         <a
           href="https://www.maxcooperevans.com"
-          className="text-xs text-stone-400 hover:text-stone-200 transition-colors"
+          className="text-sm text-black hover:text-stone-700 transition-colors"
         >
           ← Home
         </a>
