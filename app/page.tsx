@@ -30,7 +30,7 @@ interface Recommendation {
 
 function parseBooks(raw: GoodreadsBook[]): ParsedBook[] {
   return raw
-    .filter((row) => row["Exclusive Shelf"] === "read" && parseInt(row["My Rating"]) > 0)
+    .filter((row) => row["Exclusive Shelf"] === "read")
     .map((row) => ({
       title: row["Title"] || "",
       author: row["Author"] || "",
@@ -182,7 +182,7 @@ export default function Home() {
             <div className="space-y-1">
               <p className="text-2xl">✅</p>
               <p className="font-medium text-emerald-700">{fileName}</p>
-              <p className="text-sm text-emerald-600">{books.length} rated books loaded</p>
+              <p className="text-sm text-emerald-600">{books.length} books loaded</p>
             </div>
           ) : (
             <div className="space-y-1">

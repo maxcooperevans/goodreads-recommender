@@ -74,27 +74,44 @@ export async function POST(req: NextRequest) {
 
   const client = new Anthropic({ apiKey });
 
-  // Build a concise summary of the user's reading profile
+  // Complete list of every book they've read — used as hard exclusion list
+  const allReadBooks = books
+    .map((b) => `"${b.title}" by ${b.author}`)
+    .join("\n");
+
+  // Taste signals — rated subsets
   const topBooks = books
     .filter((b) => b.myRating >= 4)
-    .slice(0, 40)
+    .slice(0, 60)
     .map((b) => `"${b.title}" by ${b.author} (${b.myRating}★)`)
+    .join("\n");
+
+  const midBooks = books
+    .filter((b) => b.myRating === 3)
+    .slice(0, 20)
+    .map((b) => `"${b.title}" by ${b.author} (3★)`)
     .join("\n");
 
   const lowerBooks = books
-    .filter((b) => b.myRating <= 2)
-    .slice(0, 15)
+    .filter((b) => b.myRating > 0 && b.myRating <= 2)
+    .slice(0, 20)
     .map((b) => `"${b.title}" by ${b.author} (${b.myRating}★)`)
     .join("\n");
 
-  const prompt = `You are a passionate book recommender with encyclopedic knowledge of literature. A reader has shared their Goodreads ratings. Analyze their taste and recommend 10 books they haven't read yet.
+  const prompt = `You are a passionate book recommender with encyclopedic knowledge of literature. A reader has shared their Goodreads library. Analyze their taste and recommend 10 books they haven't read yet.
+
+CRITICAL — DO NOT RECOMMEND ANY OF THESE BOOKS. THE USER HAS ALREADY READ ALL OF THEM:
+${allReadBooks}
+
+--- TASTE SIGNALS (for understanding preferences only) ---
 
 HIGHLY RATED (4-5★):
 ${topBooks || "None"}
 
+${midBooks ? `MIDDLE RATED (3★):\n${midBooks}\n` : ""}
 ${lowerBooks ? `LOWER RATED (1-2★):\n${lowerBooks}` : ""}
 
-Total books read and rated: ${books.length}
+Total books read: ${books.length}
 
 Based on their taste, recommend exactly 10 books. Return ONLY a JSON array with this structure, no other text:
 [
@@ -107,7 +124,7 @@ Based on their taste, recommend exactly 10 books. Return ONLY a JSON array with 
 ]
 
 Rules:
-- Do NOT recommend any book they've already rated
+- NEVER recommend any book from the already-read list above
 - Prioritize books similar to their 5★ picks
 - Vary genres/authors across the 10 picks
 - Give specific, personal reasons referencing books they actually rated highly
